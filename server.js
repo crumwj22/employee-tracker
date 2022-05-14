@@ -22,9 +22,9 @@ const db = mysql.createConnection(
   console.log(`Connected to the employees_db database.`)
 );
 
-// Create a movie
-app.post("/api/add-movie", ({ body }, res) => {
-  const sql = `INSERT INTO movies (movie_name)
+// Create an employee
+app.post("/api/add-employee", ({ body }, res) => {
+  const sql = `INSERT INTO employee (first_name)
       VALUES (?)`;
   const params = [body.movie_name];
 
@@ -40,7 +40,7 @@ app.post("/api/add-movie", ({ body }, res) => {
   });
 });
 
-// Read all movies
+// Read all employees
 app.get("/api/movies", (req, res) => {
   const sql = `SELECT id, movie_name AS title FROM movies`;
 
@@ -56,7 +56,7 @@ app.get("/api/movies", (req, res) => {
   });
 });
 
-// Delete a movie
+// Delete a delete an employee
 app.delete("/api/movie/:id", (req, res) => {
   const sql = `DELETE FROM movies WHERE id = ?`;
   const params = [req.params.id];
@@ -78,7 +78,7 @@ app.delete("/api/movie/:id", (req, res) => {
   });
 });
 
-// Read list of all reviews and associated movie name using LEFT JOIN
+// Read list of all employees and associated employee name using LEFT JOIN
 app.get("/api/movie-reviews", (req, res) => {
   const sql = `SELECT movies.movie_name AS movie, reviews.review FROM reviews LEFT JOIN movies ON reviews.movie_id = movies.id ORDER BY movies.movie_name;`;
   db.query(sql, (err, rows) => {
@@ -93,27 +93,27 @@ app.get("/api/movie-reviews", (req, res) => {
   });
 });
 
-// BONUS: Update review name
-app.put("/api/review/:id", (req, res) => {
-  const sql = `UPDATE reviews SET review = ? WHERE id = ?`;
-  const params = [req.body.review, req.params.id];
+// BONUS: Update employee name
+// app.put("/api/review/:id", (req, res) => {
+//   const sql = `UPDATE reviews SET review = ? WHERE id = ?`;
+//   const params = [req.body.review, req.params.id];
 
-  db.query(sql, params, (err, result) => {
-    if (err) {
-      res.status(400).json({ error: err.message });
-    } else if (!result.affectedRows) {
-      res.json({
-        message: "Movie not found",
-      });
-    } else {
-      res.json({
-        message: "success",
-        data: req.body,
-        changes: result.affectedRows,
-      });
-    }
-  });
-});
+//   db.query(sql, params, (err, result) => {
+//     if (err) {
+//       res.status(400).json({ error: err.message });
+//     } else if (!result.affectedRows) {
+//       res.json({
+//         message: "Movie not found",
+//       });
+//     } else {
+//       res.json({
+//         message: "success",
+//         data: req.body,
+//         changes: result.affectedRows,
+//       });
+//     }
+//   });
+// });
 
 // Default response for any other request (Not Found)
 app.use((req, res) => {
