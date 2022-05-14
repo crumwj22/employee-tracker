@@ -1,4 +1,6 @@
 const express = require("express");
+const inquirer = require("inquirer");
+const fs = require("fs");
 // Import and require mysql2
 const mysql = require("mysql2");
 
@@ -23,103 +25,253 @@ const db = mysql.createConnection(
 );
 
 // Create an employee
-app.post("/api/add-employee", ({ body }, res) => {
-  const sql = `INSERT INTO employee (first_name)
-      VALUES (?)`;
-  const params = [body.movie_name];
+// team profiles
+const Manager = require("./lib/manager");
+const Engineer = require("./lib/engineer");
+const Intern = require("./lib/intern");
 
-  db.query(sql, params, (err, result) => {
-    if (err) {
-      res.status(400).json({ error: err.message });
-      return;
-    }
-    res.json({
-      message: "success",
-      data: body,
+const teamArray = [];
+
+const createTeam = () => {
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        message: "what type of employee would you like to add to your team?",
+        name: "addEmployeePrompt",
+        choices: [
+          "Manager",
+          "Engineer",
+          "Intern",
+          "No more team members are needed.",
+        ],
+      },
+    ])
+    .then(function (userInput) {
+      switch (userInput.addEmployeePrompt) {
+        case "Manager":
+          addManager();
+          break;
+        case "Engineer":
+          addEngineer();
+          break;
+        case "Intern":
+          addIntern();
+          break;
+        // case "No more team members are needed.":
+        default:
+          renderFile(teamArray);
+          break;
+      }
     });
-  });
-});
+};
 
-// Read all employees
-app.get("/api/movies", (req, res) => {
-  const sql = `SELECT id, movie_name AS title FROM movies`;
+// adding manager
+const addManager = () => {
+  return inquirer
+    .prompt([
+      {
+        type: "input",
+        message: "who is the manager of the team:",
+        name: "name",
+        validate: (nameInput) => {
+          if (nameInput) {
+            return true;
+          } else {
+            console.log("Please enter the managers name.");
+            return false;
+          }
+        },
+      },
 
-  db.query(sql, (err, rows) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
-    }
-    res.json({
-      message: "success",
-      data: rows,
+      {
+        type: "input",
+        message: "Please enter the managers ID:",
+        name: "id",
+        validate: (nameInput) => {
+          if (nameInput) {
+            return true;
+          } else {
+            console.log("Please enter the managers ID.");
+            return false;
+          }
+        },
+      },
+      {
+        type: "input",
+        message: "Please enter the managers email:",
+        name: "email",
+        validate: (nameInput) => {
+          if (nameInput) {
+            return true;
+          } else {
+            console.log("Please enter the managers email.");
+            return false;
+          }
+        },
+      },
+      {
+        type: "input",
+        message: "Please enter the managers office number:",
+        name: "officeNumber",
+        validate: (nameInput) => {
+          if (nameInput) {
+            return true;
+          } else {
+            console.log("Please enter the managers office number.");
+            return false;
+          }
+        },
+      },
+    ])
+
+    .then((managerInput) => {
+      const { name, id, email, officeNumber } = managerInput;
+      const manager = new Manager(name, id, email, officeNumber);
+
+      teamArray.push(manager);
+      console.log(manager);
+
+      createTeam();
     });
-  });
-});
+};
 
-// Delete a delete an employee
-app.delete("/api/movie/:id", (req, res) => {
-  const sql = `DELETE FROM movies WHERE id = ?`;
-  const params = [req.params.id];
+// adding engineer
+const addEngineer = () => {
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        message: "What is the name of the engineer?:",
+        name: "name",
+        validate: (nameInput) => {
+          if (nameInput) {
+            return true;
+          } else {
+            console.log("Please enter the engineers name.");
+            return false;
+          }
+        },
+      },
 
-  db.query(sql, params, (err, result) => {
-    if (err) {
-      res.statusMessage(400).json({ error: res.message });
-    } else if (!result.affectedRows) {
-      res.json({
-        message: "Movie not found",
-      });
-    } else {
-      res.json({
-        message: "deleted",
-        changes: result.affectedRows,
-        id: req.params.id,
-      });
-    }
-  });
-});
+      {
+        type: "input",
+        message: "Please enter the engineers ID:",
+        name: "id",
+        validate: (nameInput) => {
+          if (nameInput) {
+            return true;
+          } else {
+            console.log("Please enter the engineers ID.");
+            return false;
+          }
+        },
+      },
+      {
+        type: "input",
+        message: "Please enter the engineers email:",
+        name: "email",
+        validate: (nameInput) => {
+          if (nameInput) {
+            return true;
+          } else {
+            console.log("Please enter the engineers email.");
+            return false;
+          }
+        },
+      },
+      {
+        type: "input",
+        message: "Please enter the engineers GitHub username:",
+        name: "officeNumber",
+        validate: (nameInput) => {
+          if (nameInput) {
+            return true;
+          } else {
+            console.log("Please enter the engineers GitHub username.");
+            return false;
+          }
+        },
+      },
+    ])
 
-// Read list of all employees and associated employee name using LEFT JOIN
-app.get("/api/movie-reviews", (req, res) => {
-  const sql = `SELECT movies.movie_name AS movie, reviews.review FROM reviews LEFT JOIN movies ON reviews.movie_id = movies.id ORDER BY movies.movie_name;`;
-  db.query(sql, (err, rows) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
-    }
-    res.json({
-      message: "success",
-      data: rows,
+    .then((engineerInput) => {
+      const { name, id, email, github } = engineerInput;
+      const engineer = new Engineer(name, id, email, github);
+
+      teamArray.push(engineer);
+      console.log(engineer);
+
+      createTeam();
     });
-  });
-});
+};
 
-// BONUS: Update employee name
-// app.put("/api/review/:id", (req, res) => {
-//   const sql = `UPDATE reviews SET review = ? WHERE id = ?`;
-//   const params = [req.body.review, req.params.id];
+// add Intern
+const addIntern = () => {
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        message: "What is the name of the Intern?:",
+        name: "name",
+        validate: (nameInput) => {
+          if (nameInput) {
+            return true;
+          } else {
+            console.log("Please enter the Interns name.");
+            return false;
+          }
+        },
+      },
 
-//   db.query(sql, params, (err, result) => {
-//     if (err) {
-//       res.status(400).json({ error: err.message });
-//     } else if (!result.affectedRows) {
-//       res.json({
-//         message: "Movie not found",
-//       });
-//     } else {
-//       res.json({
-//         message: "success",
-//         data: req.body,
-//         changes: result.affectedRows,
-//       });
-//     }
-//   });
-// });
+      {
+        type: "input",
+        message: "Please enter the Interns ID:",
+        name: "id",
+        validate: (nameInput) => {
+          if (nameInput) {
+            return true;
+          } else {
+            console.log("Please enter the Interns ID.");
+            return false;
+          }
+        },
+      },
+      {
+        type: "input",
+        message: "Please enter the Interns email:",
+        name: "email",
+        validate: (nameInput) => {
+          if (nameInput) {
+            return true;
+          } else {
+            console.log("Please enter the Interns email.");
+            return false;
+          }
+        },
+      },
+      {
+        type: "input",
+        message: "Please enter the Interns school that they went to:",
+        name: "school",
+        validate: (nameInput) => {
+          if (nameInput) {
+            return true;
+          } else {
+            console.log("Please enter the Interns school.");
+            return false;
+          }
+        },
+      },
+    ])
 
-// Default response for any other request (Not Found)
-app.use((req, res) => {
-  res.status(404).end();
-});
+    .then((internInput) => {
+      const { name, id, email, school } = internInput;
+      const intern = new Intern(name, id, email, school);
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+      teamArray.push(intern);
+      console.log(intern);
+
+      createTeam();
+    });
+};
