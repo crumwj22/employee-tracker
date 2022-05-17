@@ -40,7 +40,7 @@ const createTeam = () => {
           viewAllDepartments();
           break;
         case "Add Employee":
-          // addEmployee();
+          addEmployee();
           break;
         case "Update Employee":
           // updateEmployee();
@@ -55,7 +55,7 @@ const createTeam = () => {
     });
 };
 
-// adding manager
+// view employees
 const viewAllEmployees = () => {
   db.findEmployees()
     .then(([data]) => {
@@ -64,7 +64,7 @@ const viewAllEmployees = () => {
     .then(() => createTeam());
 };
 
-// adding engineer
+// view roles
 const viewAllRoles = () => {
   db.findRoles()
     .then(([data]) => {
@@ -73,12 +73,71 @@ const viewAllRoles = () => {
     .then(() => createTeam());
 };
 
-// const viewAllDepartments = () => {
-//   db.findDepartments()
-//     .then(([data]) => {
-//       console.table(data);
-//     })
-//     .then(() => createTeam());
-// };
+// view departments
+const viewAllDepartments = () => {
+  db.findDepartments()
+    .then(([data]) => {
+      console.table(data);
+    })
+    .then(() => createTeam());
+};
+
+const addEmployee = () => {
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        message: "Enter employees first name",
+        name: "firstname",
+      },
+      {
+        type: "input",
+        message: "Enter employees last name",
+        name: "lastname",
+      },
+      {
+        type: "list",
+        message: "What will their role be?",
+        name: "role",
+        choices: [
+          "Sales Lead",
+          "Salesperson",
+          "Lead Engineer",
+          "Software Engineer",
+          "Account Manager",
+          "Accountant",
+          "Legal Team Lead",
+          "Lawyer",
+        ],
+      },
+      {
+        type: "list",
+        message: "Who will be their manager?",
+        name: "manager",
+        choices: [
+          "John Doe, Sales Lead",
+          "Ashley Rodreguiz, Lead Engineer",
+          "Malia Brown, Account Manager",
+          "Tom Allen, Legal Team Lead",
+        ],
+      },
+    ])
+    .then(([data]) => {
+      return this.connection.promise().query(
+        "INSERT INTO employee SET",
+        {
+          first_name: data.firstName,
+          last_name: data.lastName,
+          manager_id: managerId,
+          role_id: roleId,
+        },
+        function (err) {
+          if (err) throw err;
+          console.table(data);
+          createTeam();
+        }
+      );
+    });
+};
 
 welcome();

@@ -19,15 +19,13 @@ class Database {
       "SELECT role.id, role.title, role.department_id, role.salary AS Salary FROM employee JOIN role ON employee.role_id = role.id"
     );
   }
-}
 
-// findDepartments() {
-//     return this.connection
-//       .promise()
-//       .query(
-//         "SELECT employee.first_name, employee.last_name, department.name AS department FROM employee JOIN role ON employee.role_id = role.id"
-//       );
-//   }
-// }
+  findDepartments() {
+    return this.connection.promise().query(
+      // THEN I am presented with a formatted table showing department names and department ids
+      "SELECT department.name, department.id AS department FROM employee JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id ORDER BY employee.id"
+    );
+  }
+}
 
 module.exports = new Database(connection);
