@@ -82,7 +82,23 @@ const viewAllDepartments = () => {
     .then(() => createTeam());
 };
 
-const addEmployee = () => {
+const addEmployee = async () => {
+  const allManagers = await db.findEmployees();
+  const managerList = allManagers.map((manager) => {
+    return {
+      name: `${manager.first_name} ${manager.last_name} `,
+      value: manager.id,
+    };
+    // console.log(managerList);
+  });
+  const allRoles = await db.findRoles();
+  const roleList = allRoles.map((role) => {
+    return {
+      name: `${role.name}`,
+      value: role.id,
+    };
+  });
+
   inquirer
     .prompt([
       {
@@ -98,28 +114,14 @@ const addEmployee = () => {
       {
         type: "list",
         message: "What will their role be?",
-        name: "role",
-        choices: [
-          "Sales Lead",
-          "Salesperson",
-          "Lead Engineer",
-          "Software Engineer",
-          "Account Manager",
-          "Accountant",
-          "Legal Team Lead",
-          "Lawyer",
-        ],
+        name: "roleId",
+        choices: roleList,
       },
       {
         type: "list",
         message: "Who will be their manager?",
-        name: "manager",
-        choices: [
-          "John Doe, Sales Lead",
-          "Ashley Rodreguiz, Lead Engineer",
-          "Malia Brown, Account Manager",
-          "Tom Allen, Legal Team Lead",
-        ],
+        name: "managerId",
+        choices: managerList,
       },
     ])
     .then(([data]) => {
