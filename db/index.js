@@ -26,13 +26,6 @@ class Database {
       "SELECT department.name, department.id AS department FROM employee JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id ORDER BY employee.id"
     );
   }
-
-  //   findDepartments() {
-  //     return this.connection.promise().query(
-  //       // THEN I am presented with a formatted table showing department names and department ids
-  //       "SELECT department.name, department.id AS department FROM employee JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id ORDER BY employee.id"
-  //     );
-  //   }
 }
 
 module.exports = new Database(connection);

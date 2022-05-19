@@ -42,14 +42,14 @@ const createTeam = () => {
         case "Add Employee":
           addEmployee();
           break;
-        case "Update Employee":
-          // updateEmployee();
+        case "Add Department":
+          addDepartment();
           break;
         case "Add Role":
           // addRole();
           break;
-        case "Add Department":
-          // addDepartment();
+        case "Update Employee Role":
+          // updateEmployeeRole();
           break;
       }
     });
@@ -88,8 +88,8 @@ const addEmployee = async () => {
     return {
       name: `${manager.first_name} ${manager.last_name} `,
       value: manager.id,
+      // console.log(managerList);
     };
-    // console.log(managerList);
   });
   const allRoles = await db.findRoles();
   const roleList = allRoles.map((role) => {
@@ -98,7 +98,6 @@ const addEmployee = async () => {
       value: role.id,
     };
   });
-
   inquirer
     .prompt([
       {
@@ -140,6 +139,100 @@ const addEmployee = async () => {
         }
       );
     });
+  const addDepartment = async () => {
+    const allDepartments = await db.findDepartments();
+    const departmentList = allDepartments.map((department) => {
+      return {
+        name: `${department.name}`,
+        value: department.id,
+      };
+    });
+    inquirer
+      .prompt([
+        {
+          type: "input",
+          message: "Enter the name of department you would like to add",
+          name: "departmentName",
+          choices: departmentList,
+        },
+      ])
+      .then(([data]) => {
+        return this.connection.promise().query(
+          "INSERT INTO department SET",
+          {
+            department_id: data.departmentName,
+            
+          },
+          function (err) {
+            if (err) throw err;
+            console.table(data);
+            createTeam();
+          }
+        );
+      });
+      const addRole = async () => {
+        const allRoles = await db.findRoles();
+        const roleList = allRoles.map((role) => {
+          return {
+            name: `${role.name}`,
+            value: role.id,
+          };
+        });
+        inquirer
+          .prompt([
+            {
+              type: "input",
+              message: "Enter name of the role you would like to add",
+              name: "roleName",
+              choices: roleList,
+            },
+          ])
+          .then(([data]) => {
+            return this.connection.promise().query(
+              "INSERT INTO role SET",
+              {
+                role_id: data.roleName,
+                
+              },
+              function (err) {
+                if (err) throw err;
+                console.table(data);
+                createTeam();
+              }
+            );
+          });
+          const updateEmployeeRole = async () => {
+            const allRoles = await db.findRoles();
+  const roleList = allRoles.map((role) => {
+    return {
+      name: `${role.name}`,
+      value: role.id,
+              };
+            });
+            inquirer
+              .prompt([
+                {
+                  type: "list",
+                  message: "What will their role be?",
+                  name: "roleId",
+                  choices: roleList,
+                },
+              ])
+              .then(([data]) => {
+                return this.connection.promise().query(
+                  "INSERT INTO role SET",
+                  {
+                    role_id: data.roleName,
+                    
+                  },
+                  function (err) {
+                    if (err) throw err;
+                    console.table(data);
+                    createTeam();
+                  }
+                );
+              });
+  };
 };
 
 welcome();
