@@ -16,6 +16,7 @@ Developers frequently have to create interfaces that allow non-developers to eas
 - [Contributing](#contributing)
 - [Tests](#tests)
 - [Questions](#questions)
+- [Link to Demo Video](#demo-video)
 
 ## Installation
 
@@ -46,4 +47,6 @@ Please read the installation section. For the repository owner, contribution gui
 If you have additional questions about this project please contact me directly at <crumwj22@hotmail.com>.
 You can view more of my projects at <https://github.com/crumwj22>.
 
-<a href="https://www.youtube.com/watch?v=UNKiSrB7XAc">Link to Employee Tracker test video</a>
+## Demo Video
+
+<a href="https://youtu.be/3mFmsmvBcH8">Link to Employee Tracker test video</a>
